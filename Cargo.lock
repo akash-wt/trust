@@ -357,13 +357,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "tcp_in_rust"
-version = "0.1.0"
-dependencies = [
- "tun-tap",
-]
-
-[[package]]
 name = "tokio"
 version = "0.1.22"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -562,6 +555,13 @@ dependencies = [
  "tokio-codec",
  "tokio-io",
  "tokio-reactor",
+]
+
+[[package]]
+name = "trust"
+version = "0.1.0"
+dependencies = [
+ "tun-tap",
 ]
 
 [[package]]
