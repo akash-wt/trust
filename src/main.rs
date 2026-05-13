@@ -8,37 +8,34 @@ fn main() -> io::Result<()> {
         let nbytes = nic.recv(&mut buf[..])?;
         let eht_flags = u16::from_be_bytes([buf[0], buf[1]]);
         let eth_proto = u16::from_be_bytes([buf[2], buf[3]]);
-        if eth_proto != 0x0800{
+        if eth_proto != 0x0800 {
             //not IPv4
             continue;
         }
 
-        match etherparse::Ipv4HeaderSlice::from_slice(&buf[4..nbytes]){
-            Ok(p)=>{
+        match etherparse::Ipv4HeaderSlice::from_slice(&buf[4..nbytes]) {
+            Ok(p) => {
                 let src = p.source_addr();
                 let dst = p.destination_addr();
-                let proto= p.protocol();
+                let proto = p.protocol();
 
-                if proto != etherparse::IpNumber(0x06){
-                    //not TCP 
+                if proto != etherparse::IpNumber(0x06) {
+                    //not TCP
                     continue;
                 };
 
-                match etherparse::TcpHeaderSlice::from_slice(&buf[4+p.slice().len()..]){
-                    Ok(p)=>{
-
-                    },
-                    Err(e)=>{
-                        eprintln!("ignoring weired tcp packet {:?}",e);
+                match etherparse::TcpHeaderSlice::from_slice(&buf[4 + p.slice().len()..]) {
+                    Ok(p) => {}
+                    Err(e) => {
+                        eprintln!("ignoring weired tcp packet {:?}", e);
                     }
                 }
 
-                eprintln!("{:} -> {:} {:?} {:?}",src,dst,p.payload_len(),proto);
+                eprintln!("{:} -> {:} {:?} {:?}", src, dst, p.payload_len(), proto);
             }
-            Err(e)=>{
-                eprintln!("Ipv4HeaderSlice from_slice failed {:?}",e);
+            Err(e) => {
+                eprintln!("Ipv4HeaderSlice from_slice failed {:?}", e);
             }
         }
-
     }
 }
