@@ -15,18 +15,30 @@ fn main() -> io::Result<()> {
 
         match etherparse::Ipv4HeaderSlice::from_slice(&buf[4..nbytes]){
             Ok(p)=>{
-                eprintln!("{:?}",p);
+                let src = p.source_addr();
+                let dst = p.destination_addr();
+                let proto= p.protocol();
+
+                if proto != etherparse::IpNumber(0x06){
+                    //not TCP 
+                    continue;
+                };
+
+                match etherparse::TcpHeaderSlice::from_slice(&buf[4+p.slice().len()..]){
+                    Ok(p)=>{
+
+                    },
+                    Err(e)=>{
+                        eprintln!("ignoring weired tcp packet {:?}",e);
+                    }
+                }
+
+                eprintln!("{:} -> {:} {:?} {:?}",src,dst,p.payload_len(),proto);
             }
             Err(e)=>{
-
+                eprintln!("Ipv4HeaderSlice from_slice failed {:?}",e);
             }
         }
-        eprintln!(
-            "flags {:x}, proto {:x} {:?} ",
-            eht_flags,
-            eth_proto,
-            &buf[4..nbytes]
-        );
 
     }
 }
