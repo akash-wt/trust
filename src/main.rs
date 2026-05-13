@@ -13,9 +13,9 @@ fn main() -> io::Result<()> {
             continue;
         }
 
-        match etherparse::IPv4HeaderSlice::from_slice(&[4..nbytes]){
+        match etherparse::Ipv4HeaderSlice::from_slice(&buf[4..nbytes]){
             Ok(p)=>{
-                eprintln("{}",p);
+                eprintln!("{:?}",p);
             }
             Err(e)=>{
 
