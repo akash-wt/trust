@@ -9,7 +9,7 @@ fn main() -> io::Result<()> {
         let flags = u16::from_be_bytes([buf[0], buf[1]]);
         let proto = u16::from_be_bytes([buf[2], buf[3]]);
         eprintln!(
-            "flags {:}, proto {:} {:?} ",
+            "flags {:x}, proto {:x} {:?} ",
             flags,
             proto,
             &buf[4..nbytes]
