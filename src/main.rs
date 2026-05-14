@@ -1,7 +1,21 @@
+use std::collections::HashMap;
 use std::io;
+use std::net::Ipv4Addr;
 use tun_tap::{Iface, Mode};
 
+struct TcpState{
+
+}
+
+#![derive(Copy,Clone,Debug,Eq,PartialEq)]
+struct Quad{
+src: (Ipv4Addr,u16),
+dst: (Ipv4Addr,u16)
+}
+
 fn main() -> io::Result<()> {
+    let connections :HashMap<Quad,TcpState> = Default::default();
+
     let nic: Iface = Iface::new("tun0", Mode::Tun)?;
     let mut buf = [0u8; 1504];
     loop {
@@ -26,16 +40,21 @@ fn main() -> io::Result<()> {
 
                 match etherparse::TcpHeaderSlice::from_slice(&buf[4 + p.slice().len()..]) {
                     Ok(t) => {
+                        // (srcip, srcp, dstip, dstp)
                         let s_port = t.source_port();
-                        let d_port= t.destination_port();
-
-                        eprintln!("{:?} -> {:?} {:?}",s_port,d_port,proto);
+                        let d_port = t.destination_port();
+                        eprintln!(
+                            "{:?} -> {:?} {:?}b of tcp {:?}",
+                            s_port,
+                            d_port,
+                            t.slice().len(),
+                            proto
+                        );
                     }
                     Err(e) => {
                         eprintln!("ignoring weired tcp packet {:?}", e);
                     }
                 }
-
             }
             Err(e) => {
                 eprintln!("Ipv4HeaderSlice from_slice failed {:?}", e);
